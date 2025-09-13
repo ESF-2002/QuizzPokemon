@@ -10,22 +10,32 @@ document.addEventListener('deviceready', function() {
           let list = [];
           try { list = JSON.parse(this.result) || []; } catch (e) { list = []; }
           list.sort((a, b) => b.score - a.score || a.time - b.time);
-          list = list.slice(0, 5);
+          list = list.slice(0, 10); // top 10
 
           tbody.innerHTML = "";
+          if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4">Aucun score enregistré</td></tr>`;
+            return;
+          }
+
           list.forEach((entry, i) => {
             const row = document.createElement('tr');
+
+            let medal = "";
+            if (i === 0) medal = "🥇";
+            else if (i === 1) medal = "🥈";
+            else if (i === 2) medal = "🥉";
+            else medal = i + 1;
+
+            row.classList.add("rank-" + (i + 1));
+
             row.innerHTML = `
-              <td>${i + 1}</td>
+              <td>${medal}</td>
               <td>${entry.name}</td>
               <td>${entry.score}/10</td>
               <td>${entry.time}s</td>`;
             tbody.appendChild(row);
           });
-
-          if (list.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4">Aucun score enregistré</td></tr>`;
-          }
         };
         reader.readAsText(file);
       });
